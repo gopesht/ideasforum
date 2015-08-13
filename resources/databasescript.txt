@@ -1,0 +1,57 @@
+CREATE TABLE Member (
+	name varchar(100) NOT NULL,
+	email varchar(25) NOT NULL,
+	dob date,
+	emp_id int(10) NOT NULL,
+	project_team varchar(50) NOT NULL,
+	gender varchar(15) NOT NULL,
+	about varchar(255) NOT NULL,
+	PRIMARY KEY (emp_id)
+);
+create table RegisteredMembers(
+	password varchar(100) NOT NULL,
+	emp_id int(10) ,
+	user_name varchar(50) not null,
+	Foreign key(emp_id) References Member(emp_id)
+);
+CREATE TABLE Category (
+	category_id int(10) NOT NULL,
+	category_name varchar(100) NOT NULL,
+	description varchar(255) NOT NULL,
+	PRIMARY KEY (category_id)
+);
+
+CREATE TABLE Voting (
+	idea_id int NOT NULL,
+	emp_id int,
+	voting int,
+	Primary Key(idea_id),
+	foreign key(emp_id) References Member(emp_id),
+	foreign key(idea_id) References Ideas(idea_id)
+);
+
+CREATE TABLE Ideas (
+	idea_id int NOT NULL AUTO_INCREMENT,
+	heading varchar(100) NOT NULL,
+	content varchar(100) NOT NULL,
+	emp_id int ,
+	upvoting int(10) NOT NULL,
+	downvoting int(10) NOT NULL,
+	comments varchar(255) NOT NULL,
+	primary key(idea_id),
+	foreign key(emp_id) references Member(emp_id)
+);
+CREATE TABLE comments (
+	idea_id int,
+	emp_id int(10),
+	comment_content varchar(255) NOT NULL,
+        foreign key (idea_id) references Ideas(Idea_id),
+        foreign key (emp_id) references Member(emp_id)
+        
+);
+CREATE TABLE idea_category_r(
+	idea_id int,
+        foreign key(idea_id) references Ideas(idea_id),
+	category_id int,
+        foreign key(category_id) references Category(category_id)
+);
