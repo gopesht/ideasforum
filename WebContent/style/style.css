@@ -1,0 +1,61 @@
+@CHARSET "ISO-8859-1";
+body{
+	background-color:#f2f2f2;
+	
+}
+.idea{
+	background-color: #fff;
+    font-family: sans-serif;
+    border-radius: 2px;
+    margin-top:1%;
+}
+.idea-post{
+	margin-top:2%;
+}
+.user-pic img{
+	width:50px;
+	height:50px;
+}
+.unordered-list{
+	list-style:none;
+	margin:0px;
+	padding:0px;
+}
+.unordered-list li{
+	display:inline;
+}
+.mar-left{
+	margin-left:1%;
+}
+.mar-top{
+	margin-top:1%;
+}
+.count{
+	font-weight:bold;
+}
+
+.idea-footer{
+	margin-top:2%;
+	margin-bottom:1%;
+}
+
+a {
+    color: #0254EB
+}
+a:visited {
+    color: #0254EB
+}
+a.morelink {
+    text-decoration:none;
+    outline: none;
+}
+.morecontent span {
+    display: none;
+}
+
+textarea.idea-form{
+	resize:none;
+}
+#search-category{
+	width:50%;
+}
