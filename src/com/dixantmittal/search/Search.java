@@ -12,16 +12,21 @@ package com.dixantmittal.search;
 import java.sql.*;
 import java.util.*;
 
+import com.database.beans.Ideas;
+import com.database.daoI.*;
+import com.database.daoImpl.IdeasDaoImpl;
+
+
 
 
 // class defined to sort idea_id on the basis of hit values.
-class EnhancedString implements Comparable<EnhancedString>{
+class EnhancedIdeas implements Comparable<EnhancedIdeas>{
 	
-	private String key;
+	private Ideas key;
 	private int hitVal;
 	
 	//------------------------------------------Setters and Getters-----------------------------------------
-	public String getKey(){
+	public Ideas getKey(){
 		return key;
 	}
 	
@@ -32,14 +37,14 @@ class EnhancedString implements Comparable<EnhancedString>{
 	public void setHitVal(int hitVal){
 		this.hitVal = hitVal;
 	}
-	public void setKey(String key){
+	public void setKey(Ideas key){
 		this.key = key;
 	}
 	//-------------------------------------------------------------------------------------------------------
 	
 	//----------------------overriding compareTo function----------------------------------------------------
 	@Override
-	public int compareTo(EnhancedString es) {
+	public int compareTo(EnhancedIdeas es) {
 		
 		if(es.hitVal==this.hitVal)
 			return 0;
@@ -63,7 +68,7 @@ class Search {
 	
 	//-----------------static function to search for posts on the basis of input keywords--------------------
 	@SuppressWarnings("unchecked")
-	public static ArrayList<String> searchPosts(String searchTerm){
+	public static ArrayList<Ideas> searchPosts(String searchTerm){
 		
 		String keywords[];
 		
@@ -71,32 +76,43 @@ class Search {
 		searchTerm.trim();
 		keywords = searchTerm.split("\\s");
 		
-		ArrayList<String> allResults = new ArrayList<String>();
+		ArrayList<Ideas> allResults = new ArrayList<Ideas>();
 		
 		// Database is searched for for all keywords one by one and results are added to one single ArrayList i.e allResults.
-		ArrayList<String> returnedTable;
+
+		// also counting hit values of each ID. creating a new hashmap and mapping each id to its hit value
+		
+		List<Ideas> returnedTable;
+		
+		HashMap <Integer,Boolean> duplicate = new HashMap<Integer,Boolean>();
+		
+		HashMap<Ideas, Integer> hitValue = new HashMap<Ideas, Integer>();
+		
+		for(Ideas id:allResults){
+			
+		}
+		
 		for(String key : keywords){
 			
 			returnedTable = searchDatabase(key);
 			
-			for(String result : returnedTable){
+			for(Ideas result : returnedTable){
+				
+				if(duplicate.containsKey(result.getIdea_id())){
+					hitValue.put(result,hitValue.get(result).intValue() + 1);
+					continue;
+				}
+				
+				hitValue.put(result,1);
+				duplicate.put(result.getIdea_id(),true);
 				allResults.add(result);
 			}
 		}
 		
-		// counting hit value of each ID. creating a new hashmap and mapping each id to its hit value
-		HashMap<String, Integer> hitValue = new HashMap<String, Integer>();
-		
-		for(String id:allResults){
-			if(hitValue.containsKey(id))
-				hitValue.put(id,hitValue.get(id).intValue() + 1);
-			else
-				hitValue.put(id,1);
-		}
 		// now hitValue hashmap has all the ids as well as their hit values.
 		
 		// sorting keys on the basis of hit values.
-		ArrayList<EnhancedString> sortResults = new ArrayList<EnhancedString>();
+		ArrayList<EnhancedIdeas> sortResults = new ArrayList<EnhancedIdeas>();
 		
 		Set set = hitValue.entrySet();
 	    
@@ -104,9 +120,9 @@ class Search {
 		Iterator i = set.iterator();
 		while(i.hasNext()) {
 			Map.Entry me = (Map.Entry)i.next();
-			EnhancedString tempString = new EnhancedString();
+			EnhancedIdeas tempString = new EnhancedIdeas();
 			tempString.setHitVal((int)me.getValue());
-			tempString.setKey((String)me.getKey());
+			tempString.setKey((Ideas)me.getKey());
 			sortResults.add(tempString);
 		}
 		
@@ -114,11 +130,11 @@ class Search {
 		// IDs are sorted on the basis of their hit values.
 		
 		// adding these sorted values to IDs arraylist
-		ArrayList<String> rankedSearchResults = new ArrayList<String>();
+		ArrayList<Ideas> rankedSearchResults = new ArrayList<Ideas>();
 		
 		i=sortResults.iterator();
 		while(i.hasNext()) {
-			EnhancedString es = (EnhancedString) i.next();
+			EnhancedIdeas es = (EnhancedIdeas) i.next();
 			rankedSearchResults.add(es.getKey());
 		}
 		
@@ -127,45 +143,21 @@ class Search {
 
 	
 	//	function to search ids in table that match to one keyword.
-	private static ArrayList<String> searchDatabase(String keyword){
-		
-		ArrayList<String> searchResults = new ArrayList<String>();
+	private static List<Ideas> searchDatabase(String keyword){
 		
 		//-------------------------Searching in database----------------------------------------------------------------
-		try {
-			Class.forName(drivername);
+		List<Ideas> results;
+	 	
+		results = new IdeasDaoImpl().searchIdea(keyword);
 		
-			Connection connection = DriverManager.getConnection(url,username,password);
-			
-		 	Statement statement = connection.createStatement();
-			
-		 	ResultSet results = statement.executeQuery("Select Idea_ID from Ideas where Heading like '%" + keyword + "%'");
-			
-		 	while(results.next()){
-				searchResults.add(results.getString(1));
-			}	
-			
-			results = statement.executeQuery("Select Idea_ID from Ideas where Content like '%" + keyword + "%'");
-			
-			while(results.next()){
-				searchResults.add(results.getString(1));
-			}
-			
-		} catch (ClassNotFoundException|SQLException e) {
-			e.printStackTrace();
-		}
 		//-----------------------------------------------------------------------------------------------------------------
 		
-		return searchResults;
+		return results;
 	}
 	
 	
 	// driver Method
 	public static void main(String args[]){
-		drivername = "com.mysql.jdbc.Drivername";
-		url = "";
-		username = "root";
-		password = "toor";
 		
 		Iterator i = searchPosts("").iterator();
 		while(i.hasNext()) {
