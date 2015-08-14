@@ -1,0 +1,14 @@
+div.left{
+	width: 300px;
+    /* padding: 25px; */
+    padding-top: 25px;
+    padding-right: 50px;
+    padding-bottom: 25px;
+    padding-left: 50px;
+    border: 25px solid navy;
+    margin: 25px;
+}
+
+div.userblock{
+	
+}
